@@ -1,0 +1,82 @@
+
+.cf_date_group .cf_datepicker {
+	float:left;
+}
+
+.cf_date_group img {
+	margin-bottom: 0px;
+	padding: 8px;
+}
+
+#header {
+  padding: 10px 0;
+}
+
+.form-title {
+  border-top:1px solid #ccc;
+  border-bottom:1px solid #ccc;
+  padding: 10px 0;
+}
+
+.form-title h1 {
+  font-size:2em;
+  margin: 0;
+}
+
+#footer {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 0;
+}
+
+#footer ul {
+  margin-bottom:0;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+.tyc {
+  max-height:300px;
+  white-space:pre-line;
+}
+
+input[type="checkbox"] {
+  float:left;
+  margin-right:10px;
+  margin-top: 10px;
+}
+
+input[type="checkbox"] + label {
+  font-weight:normal;
+  display:block;
+  padding-top: 7px;
+}
+
+.bg-danger {
+  padding:15px;
+}
+
+.row.phonenumber [class^="col-sm"] {
+  padding-right:0px;
+}
+
+.row.phonenumber [class^="col-sm"] .form-control {
+  padding: 6px 7px;
+}
+
+#loading {
+  position:fixed;
+  top:0;
+  right:0;
+  height: 100%;
+  width:100%;
+  background-color:#ddd;
+  opacity:0.8;
+  z-index:1;
+  display:none;
+}
+
+
+
