@@ -1,0 +1,11 @@
+Usuario Base de datos de linode gflacso_forms/gflacso_forms
+- Restaurar BK de la Base de datos.
+- Limpiar tablas de las submissions: form_X donde X es el formulario
+- Copiar archivos PHP.
+- Modificar archivo: 
+- Ejecutar consultas:
+UPDATE gflacso_forms.ft_settings SET  setting_value =  'http://forms.geneos.com.ar' WHERE  ft_settings = 'default_logout_url';
+UPDATE gflacso_forms.ft_settings SET  setting_value =  'http://forms.geneos.com.ar/upload' WHERE  ft_settings = 'file_upload_url';
+UPDATE gflacso_forms.ft_settings SET  setting_value =  'http://forms.geneos.com.ar/modules/form_builder/published' WHERE  ft_settings = 'default_published_folder_url';
+
+

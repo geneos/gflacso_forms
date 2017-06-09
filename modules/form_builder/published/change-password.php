@@ -2,7 +2,7 @@
 /**
  * Custom Form Page, creada manualmente
  */
-require_once('/opt/lampp/htdocs/www/formtools/global/library.php');
+require_once('../../../global/library.php');
 //Search for POST first
 $published_form_id = $_POST['published_form_id'];
 //If not search for GET

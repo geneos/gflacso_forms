@@ -560,7 +560,7 @@ function gg_processResetChangePasswordForm($infohash) {
       $password = $infohash['clave'];
       $confirmar_password =$infohash['confirmar_clave'];
       if ($password != $confirmar_password)
-          $message .= "Las contrasenas no coinciden";
+          $message .= "Las contraseñas no coinciden";
 
       if (!empty($message))
         return array (
@@ -615,7 +615,7 @@ function gg_processChangePasswordForm($infohash) {
   $password = $infohash['nueva_clave'];
   $confirmar_password =$infohash['confirmar_nueva_clave'];
   if ($password != $confirmar_password)
-      $message .= "Las contrasenas no coinciden";
+      $message .= "Las contraseñas no coinciden";
   
   if (!empty($message))
     return array (
@@ -629,8 +629,6 @@ function gg_processChangePasswordForm($infohash) {
     'password' => $infohash['clave'],
     'new_password' =>  $infohash['nueva_clave']
   );
-
-  var_dump($val);
 
   $client = gg_getWebserviceClient();
 
@@ -663,6 +661,19 @@ function gg_processChangePasswordForm($infohash) {
 
 //Ejecuta acciones necesarias para dar de alta un alumno
 function gg_processNewAccountForm($infohash) {
+
+  //Valido Contrasenas iguales
+  $message = "";
+  $password = $infohash['password'];
+  $confirmar_password =$infohash['confirmar_password'];
+  if ($password != $confirmar_password)
+      $message .= "Las contraseñas no coinciden";
+  
+  if (!empty($message))
+    return array (
+      "success" => false,
+      "message" => $message
+    );
 
   $val = array(
     'apellido' => $infohash['apellido'],
