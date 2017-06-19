@@ -32,12 +32,13 @@
                       <legend>{{$group.group_name|upper}}</legend>
                     {{/if}}
 
-                    {{if $current_page == 3}}
+                    <!-- Last form page ? then print TyC -->
+                    {{if ($num_form_pages - $current_page) == 0}}
                       {{php}}
                         $this->assign('filename',$GLOBALS["filename"]);
                         $this->assign('gg_settings',ft_get_module_settings("", "arbitrary_settings"));
                       {{/php}}
-                      {{if $filename == 'inscripcion.php'}}
+                      {{if $filename == $gg_settings.GGInscriptionForm}}
                           <pre class="tyc">{{$gg_settings.GGTYC}}</pre>
                       {{/if}}
                     {{/if}}
@@ -60,10 +61,6 @@
                       </div>
                     {{/foreach}}
 
-                    {{if $fields|@count > 0}}
-                    <!-- WRAPER ENDS HERE -->
-                    {{/if}}
-
                     </fieldset> 
                   {{/foreach}}
                   </div>
@@ -73,7 +70,7 @@
                     $this->assign('filename',$GLOBALS["filename"]);
                     $this->assign('gg_settings',ft_get_module_settings("", "arbitrary_settings"));
                     {{/php}}
-                    {{if $filename == 'inscripcion.php'}}
+                    {{if $filename == $gg_settings.GGInscriptionForm}}
                       <ul class="list-unstyled col-sm-offset-4">
                         <li><a href="{{$g_root_url}}/modules/form_builder/published/{{$gg_settings.GGNewAccountForm}}?published_form_id={{if $smarty.get.published_form_id}}{{$smarty.get.published_form_id}}{{else}}{{$smarty.post.published_form_id}}{{/if}}&course_id={{if $smarty.get.course_id}}{{$smarty.get.course_id}}{{else}}{{$smarty.post.course_id}}{{/if}}">Crear nueva cuenta</a></li>
                         <li><a href="{{$g_root_url}}/modules/form_builder/published/{{$gg_settings.GGResetPasswordForm}}?published_form_id={{if $smarty.get.published_form_id}}{{$smarty.get.published_form_id}}{{else}}{{$smarty.post.published_form_id}}{{/if}}">Recuperar contraseña</a></li>

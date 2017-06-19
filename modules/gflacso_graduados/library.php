@@ -114,7 +114,7 @@ function gg_isLoginForm($infohash) {
 //Chequea si la pagina es de actualizar informacion personal
 function gg_isUpdatePersonalData($infohash) {
 
-  if ( isset($infohash['estado_inscripcion']) && isset($infohash['telefono_1']) && isset($infohash['celular_1']))
+  if ( isset($infohash['sexo']) && isset($infohash['telefono_1']) && isset($infohash['fecha_nacimiento']) && isset($infohash['calle_domicilio']))
      return true;
 
   return false;

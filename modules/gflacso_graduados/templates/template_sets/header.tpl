@@ -8,6 +8,8 @@
   <script type="text/javascript" src="{{$g_root_url}}/modules/gflacso_graduados/templates/template_sets/js/general.js"></script>
    <script type="text/javascript" src="{{$g_root_url}}/modules/gflacso_graduados/templates/template_sets/js/spin.min.js"></script>
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet">
+  
+  {{$R.styles}}
 
 </head>
 </head>
