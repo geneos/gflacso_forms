@@ -2,17 +2,25 @@
 require("../class/simple_restclient.php");
 
 
+
+
+require_once('../../../global/library.php');
+
 $jsondata = array();
+$settings = ft_get_module_settings("", "arbitrary_settings");
+
+$uid  = $settings["WSUser"];
+$pwd  = $settings["WSPassword"];
+$url = $settings["WSURL"];
+
+$clase = "FlacsoWs";
+$client =new simple_restclient($url); 
+$client->SetClass($clase);
+$client->SetAuth($uid, $pwd);
 
 if( isset($_POST['action']) ) {
 
     if( $_POST['action'] == 'get_paises' ) {
-
-        $uid    = "test_geneos";
-        $pwd    = "fl4cs02017";
-
-        $url = "https://sgaws.flacso.org.ar/server.php";
-        $clase = "FlacsoWs";
 
         $client =new simple_restclient($url); 
         $client->SetClass($clase);
@@ -35,12 +43,6 @@ if( isset($_POST['action']) ) {
 
 
         if( $_POST['action'] == 'get_provincias' ) {
-
-            $uid    = "test_geneos";
-            $pwd    = "fl4cs02017";
-
-            $url = "https://sgaws.flacso.org.ar/server.php";
-            $clase = "FlacsoWs";
 
             $val = array(
                 'id_pais'=>$_POST['id_pais']
@@ -66,12 +68,6 @@ if( isset($_POST['action']) ) {
         } else 
 
             if( $_POST['action'] == 'get_localidades' ) {
-
-                $uid    = "test_geneos";
-                $pwd    = "fl4cs02017";
-
-                $url = "https://sgaws.flacso.org.ar/server.php";
-                $clase = "FlacsoWs";
 
                 $val = array(
                     'id_provincia'=>$_POST['id_provincia']
