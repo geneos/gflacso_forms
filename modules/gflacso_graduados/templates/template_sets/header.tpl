@@ -38,7 +38,7 @@
 
       <div class="row form-title">
         <div class="col-sm-8 col-sm-offset-2">
-          <h1>{{$form_name}}</h1>
+          <h1>{{$form_name}} {{$smarty.session.coursename}} </h1>
         </div>
       </div>
  

@@ -42,10 +42,6 @@ else
   $config["view_id"] = $view_id;
 //Fin Mofificaciones
 
-//GENEOS Modificacion para mantener form_published_id y course_id
-
-//Fin Mofificaciones
-
 // clears out old, dud unfinalized submissions
 fb_delete_unfinalized_submissions($form_id);
 
@@ -69,6 +65,8 @@ if (isset($_GET["clear"]))
 //Tambien tengo que hacer clear cuando cambia a otro formulario (Seria algo como "logout") cuando cambia de un form a otro.
 if ( isset($_SESSION[$namespace]['filename']) && $_SESSION[$namespace]['filename'] != $filename){
   fb_clear_form_builder_form_sessions($namespace);
+  unset($_SESSION['coursename']);
+  print_r('clear');
 }
 
 // check the form shouldn't be taken offline. This does some special logic to override the is_online == "no"
@@ -79,6 +77,10 @@ $config["is_online"] = ($is_online) ? "yes" : "no";
 // set up sessions and retrieve the field data already submitted
 list($new_session, $fields) = fb_init_form_builder_page($form_id, $view_id, $namespace);
 $_SESSION[$namespace]['filename'] = $filename;
+
+if (isset($coursename)) {
+  $_SESSION['coursename'] = $coursename;
+}
 
 
 // get the current submission ID

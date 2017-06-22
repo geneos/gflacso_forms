@@ -3,7 +3,7 @@
 
 define("SUCCESS", "SUCCESS");
 
-require("class/simple_restclient.php");
+require_once("class/simple_restclient.php");
 
 function gflacso_graduados__install($module_id)
 {
