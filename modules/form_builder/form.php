@@ -66,7 +66,6 @@ if (isset($_GET["clear"]))
 if ( isset($_SESSION[$namespace]['filename']) && $_SESSION[$namespace]['filename'] != $filename){
   fb_clear_form_builder_form_sessions($namespace);
   unset($_SESSION['coursename']);
-  print_r('clear');
 }
 
 // check the form shouldn't be taken offline. This does some special logic to override the is_online == "no"
