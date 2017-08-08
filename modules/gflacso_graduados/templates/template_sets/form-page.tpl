@@ -49,15 +49,23 @@
                 
                     {{foreach from=$fields item=curr_field name=i}}
                       {{assign var=field_id value=$field.field_id}}
+
                       <div class="form-group {{if $curr_field.is_searchable == 'no'}}readonly{{/if}}">
-                        <label  class="control-label col-sm-4">
-                          {{$curr_field.field_title}}
-                          <span class="req">{{if $curr_field.is_required}}*{{/if}}</span>
-                        </label>
-                        <div class="col-sm-8" {{if $smarty.foreach.i.last}}class="rowN"{{/if}}>
-                          {{edit_custom_field form_id=$form_id field_info=$curr_field field_types=$field_types
-                          settings=$settings submission_id=$submission_id}}
-                        </div>
+                        {{if $curr_field.field_type_id == "19" }}
+                          <div class="col-sm-12" {{if $smarty.foreach.i.last}}class="rowN"{{/if}}>
+                            {{edit_custom_field form_id=$form_id field_info=$curr_field field_types=$field_types
+                            settings=$settings submission_id=$submission_id}}
+                          </div>
+                        {{else}}
+                          <label  class="control-label col-sm-4">
+                            {{$curr_field.field_title}}
+                            <span class="req">{{if $curr_field.is_required}}*{{/if}}</span>
+                          </label>
+                          <div class="col-sm-8" {{if $smarty.foreach.i.last}}class="rowN"{{/if}}>
+                            {{edit_custom_field form_id=$form_id field_info=$curr_field field_types=$field_types
+                            settings=$settings submission_id=$submission_id}}
+                          </div>
+                        {{/if}}
                       </div>
                     {{/foreach}}
 
@@ -84,10 +92,6 @@
                   </div>
 
                 </form>
-
-                
-
-
 
           </div>
         </div>

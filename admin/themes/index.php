@@ -73,7 +73,9 @@ function validate_client_swatch() {
 }
 
 $(function() {
-  $(".fancybox").fancybox();
+  if ($.fn.fancybox) {
+   $(".fancybox").fancybox();
+ }
 });
 EOF;
 

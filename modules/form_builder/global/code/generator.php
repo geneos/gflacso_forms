@@ -198,6 +198,7 @@ function fb_generate_form($settings)
 
 
   // TODO, only include codemirror if needed. It's a fringe case.
+  /* Commented JQuery include for newer versions */
   $required_resources =<<< END
   <script>
   //<![CDATA[
@@ -208,8 +209,6 @@ function fb_generate_form($settings)
   };
   //]]>
   </script>
-  <script src="$g_root_url/global/scripts/jquery.js"></script>
-  <link href="$g_root_url/themes/default/css/smoothness/jquery-ui-1.8.6.custom.css" rel="stylesheet" type="text/css"/>
   <script src="$g_root_url/themes/default/scripts/jquery-ui-1.8.6.custom.min.js"></script>
   <script src="$g_root_url/global/scripts/general.js"></script>
   <script src="$g_root_url/global/scripts/rsv.js"></script>
@@ -217,7 +216,7 @@ function fb_generate_form($settings)
   <link rel="stylesheet" href="$g_root_url/global/css/field_types.php" type="text/css" />
 	<script src="$g_root_url/global/codemirror/js/codemirror.js"></script>
 	<script src="$g_root_url/global/scripts/jquery-ui-timepicker-addon.js"></script>
-	<script src="$g_root_url/global/fancybox/jquery.fancybox-1.3.4.pack.js"></script>
+	<script src="$g_root_url/global/fancybox/jquery.fancybox-1.3.4_patch.js"></script>
 	<link rel="stylesheet" href="$g_root_url/global/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 END;
 
@@ -759,6 +758,5 @@ function fb_delete_unfinalized_submissions($form_id)
 function fb_is_final_step($current_page, $pages)
 {
 	echo $page;
-	print_r($pages);
 	exit;
 }

@@ -78,6 +78,30 @@ input[type="checkbox"] + label {
   display:none;
 }
 
+.file-preview {
+  max-height: 325px;
+  overflow-y: auto;
+}
+
+.kv-file-content label{
+  display:block;
+  font-size:14px;
+  font-weight: normal;
+}
 
 
+.kv-file-content {
+  margin-bottom: 15px;
+}
+
+.kv-file-content img,
+.kv-file-content object
+{
+  max-width: 150px !important;
+  height: auto !important;
+}
+
+.krajee-default.file-preview-frame {
+  max-width:46%;
+}
 

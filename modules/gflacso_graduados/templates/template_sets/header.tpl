@@ -1,6 +1,8 @@
-<html>
+<!doctype html>
+<html >
 <head>
   <title>{{$form_name}}</title>
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
   {{$required_resources}}
   <link rel="stylesheet" type="text/css" href="{{$g_root_url}}/modules/gflacso_graduados/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="{{$g_root_url}}/modules/gflacso_graduados/templates/template_sets/css/general.css">
@@ -9,9 +11,41 @@
    <script type="text/javascript" src="{{$g_root_url}}/modules/gflacso_graduados/templates/template_sets/js/spin.min.js"></script>
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,700" rel="stylesheet">
   
-  {{$R.styles}}
+<!-- File upload -->
+<link href="{{$g_root_url}}/modules/gflacso_graduados/templates/template_sets/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
 
-</head>
+
+<!-- piexif.min.js is only needed if you wish to resize images before upload to restore exif data.
+     This must be loaded before fileinput.min.js -->
+<script src="{{$g_root_url}}/modules/gflacso_graduados/templates/template_sets/js/plugins/piexif.min.js" type="text/javascript"></script>
+<!-- sortable.min.js is only needed if you wish to sort / rearrange files in initial preview.
+     This must be loaded before fileinput.min.js -->
+<script src="{{$g_root_url}}/modules/gflacso_graduados/templates/template_sets/js/plugins/sortable.min.js" type="text/javascript"></script>
+<!-- purify.min.js is only needed if you wish to purify HTML content in your preview for HTML files.
+     This must be loaded before fileinput.min.js -->
+<script src="{{$g_root_url}}/modules/gflacso_graduados/templates/template_sets/js/plugins/purify.min.js" type="text/javascript"></script>
+<!-- the main fileinput plugin file -->
+<script src="{{$g_root_url}}/modules/gflacso_graduados/templates/template_sets/js/fileinput.min.js"></script>
+<!-- bootstrap.js below is needed if you wish to zoom and view file content 
+     in a larger detailed modal dialog -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" type="text/javascript"></script>
+<!-- optionally if you need a theme like font awesome theme you can include 
+    it as mentioned below -->
+<!--script src="path/to/themes/fa/theme.js"></script>
+<!-- optionally if you need translation for your language then include 
+    locale file as mentioned below -->
+<script src="{{$g_root_url}}/modules/gflacso_graduados/templates/template_sets/js/locales/es.js"></script>
+
+  {{$R.styles}}
+<script>
+jQuery.fn.extend({
+    live: function (event, callback) {
+       if (this.selector) {
+            jQuery(document).on(event, this.selector, callback);
+        }
+    }
+});
+</script>
 </head>
 <body>
     <div id="loading"></div>

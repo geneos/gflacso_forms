@@ -68,7 +68,6 @@ switch ($action)
     $placeholder_hash = array();
     foreach ($placeholders as $p_info)
     {
-      print_r($p_info);
       $placeholder_hash[$p_info["placeholder_id"]] = $p_info["default_value"];
     }
     echo fb_generate_template_set_placeholders_html($set_id, $placeholders, $placeholder_hash);

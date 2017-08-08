@@ -5,6 +5,46 @@ define("SUCCESS", "SUCCESS");
 
 require_once("class/simple_restclient.php");
 
+
+/**
+ * Another getter function. This one finds out the name for a field or fields,
+ * based on their field IDs.
+ *
+ * Bah! This should return a single bloody col_name string when passed a single field_id. Refactor!
+ *
+ * @param integer $form_id
+ * @param mixed $field_id_or_ids integer or array of integers (field IDs)
+ * @return array a hash of field_ids to col_names (only one key-value paid if single field ID passed)
+ */
+function ft_get_field_name_by_field_id($form_id, $field_id_or_ids)
+{
+  global $g_table_prefix;
+
+  $form_id         = ft_sanitize($form_id);
+  $field_id_or_ids = ft_sanitize($field_id_or_ids);
+
+  $field_id_str = "";
+  if (is_array($field_id_or_ids))
+    $field_id_str = implode(",", $field_id_or_ids);
+  else
+    $field_id_str = $field_id_or_ids;
+
+  $query = mysql_query("
+    SELECT field_id, field_name
+    FROM   {$g_table_prefix}form_fields
+    WHERE  form_id = $form_id AND
+           field_id IN ($field_id_str)
+  ");
+
+  $return_info = array();
+  while ($row = mysql_fetch_assoc($query))
+  {
+    $return_info[$row["field_id"]] = $row["field_name"];
+  }
+
+  return $return_info;
+}
+
 function gflacso_graduados__install($module_id)
 {
   global $g_table_prefix;
@@ -25,26 +65,6 @@ function gflacso_graduados__uninstall($module_id)
 
 function gflacso_graduados_update_submission_start_hook($params)
 {
-  /*$infohash = $params["infohash"];
-  $form_id = $params["form_id"];
-  $submission_id = $params["submission_id"];
-  $view_id = $infohash["view_id"];
-
-  if (gg_isLoginForm($infohash)){
-    $return_info = gg_preProcessLoginForm($infohash);
-  }
-
-  if ($return_info['success']) {
-    $infohash = gg_postProcessLoginForm($form_id,$submission_id,$view_id,$infohash);
-  }
-
-  //Necesito setear valores segun como vengan de los ws
-
-  //Tengo el ID del usuario y obtengo los datos
-
-  //preprocess login 
- // $ggUserID = $_SESSION['gg_user_id'];
-  //$ggUserID = $_SESSION['gg_user_id'];*/
 
 }
 
@@ -71,8 +91,12 @@ function gflacso_graduados_update_submission_hook($params)
 
     //Actualizo informacion personal en base de datos Flacso
     $return_info = gg_processUpdatePersonalDataForm($infohash);
+  }
 
-    //Actualizo Informacion Adicional
+  if (gg_isUpdateAdditionalData($infohash)){
+
+    //Actualizo informacion adicional
+    $return_info = gg_processUpdateAdditionalDataForm($infohash,$form_id);
   }
 
   if (gg_isTyCForm($infohash)){
@@ -80,6 +104,12 @@ function gflacso_graduados_update_submission_hook($params)
     //Marco al alumno como preinscripto
     $return_info = gg_processTyCForm($infohash);
   }
+/*
+  if (gg_isFileForm($params)){
+
+    //Mando archivos adjuntos
+    $return_info = gg_processFileForm($infohash);
+  }*/
 
   if (gg_isResetPasswordForm($infohash)){
     $return_info = gg_processResetPasswordForm($infohash);
@@ -120,6 +150,35 @@ function gg_isUpdatePersonalData($infohash) {
   return false;
 }
 
+function getAdditionalFields($infohash,$formid){
+
+  $field_types = ft_get_field_type_names();
+  $fieldIds = $infohash["editable_field_ids"];
+  $j = 0;
+  foreach($fieldIds as $key => $value){
+    $name = ft_get_field_name_by_field_id($formid,$value)[$value];
+    if (strpos($name, 'adicional_') === 0) {
+      $arr_result[$j]['field_id'] = $value;
+      $arr_result[$j]['field_name'] = $name;
+      $arr_result[$j]['value'] = $infohash[$name];
+      $arr_result[$j]['type_id'] = ft_get_field_type_id_by_field_id($value);
+      $arr_result[$j]['type_name'] = ft_get_field_type($arr_result[$j]['type_id'])['field_type_identifier'];
+      $j++;
+    }
+  }
+  return $arr_result;
+}
+
+//Chequea si la pagina es de actualizar informacion personal
+function gg_isUpdateAdditionalData($infohash) {
+  foreach($infohash as $key => $value){
+    if (strpos($key, 'adicional_') === 0) {
+     return true;
+    }
+  }
+  return false;
+}
+
 //Chequea si la pagina es de Terminos y Condiciones
 function gg_isTyCForm($infohash) {
 
@@ -127,6 +186,16 @@ function gg_isTyCForm($infohash) {
      return true;
       
 
+  return false;
+}
+
+//Chequea si el formulario es de subida de archivos
+function gg_isFileForm($params) {
+
+  // if there are no files being uploaded, do nuthin'
+  if (sizeof($_FILES) > 0 ){
+    return true;
+  }
   return false;
 }
 
@@ -160,7 +229,7 @@ function gg_isChangePasswordForm($infohash) {
 
 
 //Crea instancia el cliente necesario para comunicarse con los webservices
-function gg_getWebserviceClient() {
+function gg_getWebserviceClient($isFile = false) {
 
   $settings = ft_get_module_settings("", "arbitrary_settings");
 
@@ -168,6 +237,9 @@ function gg_getWebserviceClient() {
   $pwd  = $settings["WSPassword"];
   $url = $settings["WSURL"];
 
+  if ($isFile){
+    $url = $settings["WSFileURL"];
+  }
   $clase = "FlacsoWs";
   $client =new simple_restclient($url); 
   $client->SetClass($clase);
@@ -292,6 +364,63 @@ function gg_loadCreateCourseStatus($form_id,$submission_id,$infohash) {
   return $return_info;
 }
 
+//Ejecuta acciones necesarias para el formulario de archivos
+function gg_processFileForm($infohash) {
+
+  //TODO: Ver como hacer para guardar el ID del archivo o no es necesario lo meto cuando obtengo la info?
+  /*
+  En el paso final se muestra tal cual ahora, total el archivo esta subido.
+  En el paso de editar se obtiene con los ws de archivos
+  */
+
+
+  $file_path = $_FILES['adicional_adjunto']['tmp_name'];
+  $file_name = $_FILES['adicional_adjunto']['name'];
+  $file_content = base64_encode(fread(fopen($file_path, "r"), filesize($file_path)));
+  
+  $val = array(
+   'id_alumno' => intval($_SESSION['gg_user_id']),
+   'file_name' => $file_name,
+   'file_description' => 'Esta es la descripcion',
+   'file_content' => $file_content,
+  );
+
+  $client = gg_getWebserviceClient(true);
+
+  if($client->Service_Exists()){
+   
+    $client->Call->Method("file_upload",$val,$return);
+     
+    if ($return &&  $return['transaction'] == SUCCESS) {
+        $success = true;
+        $message = $return['message'];
+
+        //Actualizo campo de formulario con el ID del archivo subido
+        /*$query = "
+        UPDATE {$g_table_prefix}form_{$form_id}
+        SET    $set_query
+        WHERE  submission_id = $submission_id
+               ";
+         mysql_query($query);*/
+    }
+    else {
+      $success = false;
+      $message = $return['message'];
+    }
+
+  }else{
+    $success = false;
+    $message = "El servicio no esta diponible en $url";
+  }
+
+  $return_info = array(
+    "success" => $success,
+    "message" => $message
+  );
+
+  return $return_info;
+}
+
 //Ejecuta acciones necesarias para el formulario de logeo
 function gg_processLoginForm($infohash) {
 
@@ -305,7 +434,6 @@ function gg_processLoginForm($infohash) {
   if($client->Service_Exists()){
    
     $client->Call->Method("autenticar",$val,$return);
-     
     if ($return &&  $return['transaction'] == SUCCESS) {
         $success = true;
         $message = $return['message'];
@@ -386,9 +514,58 @@ function gg_loadUserPersonalData($form_id,$submission_id,$infohash) {
     "message" => $message
   );
 
-
-  //Itero Sobre el llamado al web service
   if ($success) {
+
+
+    $val = array(
+    'id_alumno'=> intval($_SESSION['gg_user_id']),
+    'id_posgrado'=> intval($_SESSION['gg_course_id'])
+    );
+
+    if($client->Service_Exists()){
+
+      $client->Call->Method("alumno_get_campos_opcionales",$val,$return);
+       
+      if ($return &&  $return['transaction'] == SUCCESS) {
+          $success = true;
+          $message = $return['message'];
+
+          /*foreach ($return['datos_personales'] as $field => $value){
+            $data[$field] = $value;
+          }
+
+          $ggsettings = ft_get_module_settings("", "arbitrary_settings");
+          //Seteo valores por defecto para Residencia
+          if (!isset($data["pais_residencia"]) || empty($data["pais_residencia"]) 
+              || $data["pais_residencia"] == 269)
+            $data["pais_residencia"] = intval($ggsettings["GGDefaultCountry"]);
+
+          if (!isset($data["provincia"]) || empty($data["provincia"]))
+            $data["provincia"] = intval($ggsettings["GGDefaultProvince"]);
+
+          if (!isset($data["localidad"]) || empty($data["localidad"]))
+            $data["localidad"] = intval($ggsettings["GGDefaultCity"]);
+          //Fix para mulivalor del selector de Residencia (Pais, provincia, ciudad)
+          $data['residencia']=$data["pais_residencia"].','.$data["provincia"].','.$data["localidad"];
+          $data['fecha_nacimiento'] = date("Y-m-d H:i:s",strtotime($data['fecha_nacimiento']));
+          $data['telefono'] = $data["pais_telefono_particular"].'|'.$data["area_telefono_particular"].'|'.$data["numero_telefono_particular"];
+          $data['celular'] = $data["pais_telefono_celular"].'|'.$data["area_telefono_celular"].'|'.$data["numero_telefono_celular"];
+           $data['confirmar_email'] = $data['email'];*/
+
+      }
+      else {
+        $success = false;
+        $message = $return['message'];
+      }
+
+    }else{
+      $success = false;
+      $message = "El servicio no esta diponible en $url";
+    }
+
+    //Obtengo info adicional (Campos adicionales)
+
+
     //Actualizo formulario actual con info de webservice
     if (!gg_updateCurrentSubmission($form_id,$submission_id,$data) )
         $return_info = array(
@@ -482,6 +659,48 @@ function gg_processUpdatePersonalDataForm($infohash) {
   return $return_info;
 }
 
+//Ejecuta acciones necesarias para el actualizar informacion adicional
+function gg_processUpdateAdditionalDataForm($infohash,$formid) {
+
+  $aditionalFields = getAdditionalFields($infohash,$formid);
+  
+  //Itero por los campos adicionales y los formateo para enviar.
+  $camposAdicionales="[{tipo:'texto',valor:'hola',nombre:'campo_ejemplo'},{tipo:archivo,valor:'52',nombre:'imagen'}]";
+
+  $val = array(
+    'id_alumno'=> intval($_SESSION['gg_user_id']),
+    'id_posgrado' => intval($_SESSION['gg_course_id']),
+    'campos_opcionales' => $camposAdicionales
+  );
+
+  $client = gg_getWebserviceClient();
+
+  if($client->Service_Exists()){
+   
+    $client->Call->Method("alumno_actualizar_campos_opcionales",$val,$return);
+     
+    if ($return &&  $return['transaction'] == SUCCESS) {
+        $success = true;
+        $message = $return['message'];
+    }
+    else {
+      $success = false;
+      $message = $return['message'];
+    }
+
+  }else{
+    $success = false;
+    $message = "El servicio no esta diponible en $url";
+  }
+
+  $return_info = array(
+    "success" => $success,
+    "message" => $message
+  );
+
+  return $return_info;
+}
+
 //Ejecuta acciones necesarias para el formulario de logeo
 function gg_processTyCForm($infohash) {
 
@@ -507,6 +726,8 @@ function gg_processResetPasswordForm($infohash) {
 
   $client = gg_getWebserviceClient();
 
+  var_dump($val);
+ 
   if($client->Service_Exists()){
    
     $client->Call->Method("alumno_resetear_password",$val,$return);
@@ -530,6 +751,8 @@ function gg_processResetPasswordForm($infohash) {
     "message" => $message
   );
 
+  print_r($return);
+   die();
   return $return_info;
 }
 
@@ -729,29 +952,6 @@ function gg_updateCurrentSubmission($form_id,$submission_id,$data) {
   foreach ($form_fields as $row) {
     $field_id = $row["field_id"];
 
-    // TODO: Ver como manejar archivos
-    /*
-    if ($field_types_processing_info[$row["field_type_id"]]["is_file_field"] == "yes")
-    {
-      $file_data = array(
-        "field_id"   => $field_id,
-        "field_info" => $row,
-        "data"       => $infohash,
-        "code"       => $field_types_processing_info[$row["field_type_id"]]["php_processing"],
-        "settings"   => $field_settings[$field_id]
-      );
-
-      if (empty($field_types_processing_info[$row["field_type_id"]]["php_processing"]))
-      {
-        $file_fields[] = $file_data;
-        continue;
-      }
-      else
-      {
-        $value = ft_process_form_field($file_data);
-        $query[] = $row["col_name"] . " = '$value'";
-      }
-    }*/
 
     if ($row["field_name"] == "core__submission_date" || $row["col_name"] == "core__last_modified")
     {
@@ -759,22 +959,6 @@ function gg_updateCurrentSubmission($form_id,$submission_id,$data) {
         continue;
     }
 
-    // TODO: Ver como manejar archivos
-    /*
-    if (!empty($field_types_processing_info[$row["field_type_id"]]["php_processing"]))
-    {
-      $data = array(
-        "field_info"   => $row,
-        "data"         => $infohash,
-        "code"         => $field_types_processing_info[$row["field_type_id"]]["php_processing"],
-        "settings"     => $field_settings[$field_id],
-        "account_info" => isset($_SESSION["ft"]["account"]) ? $_SESSION["ft"]["account"] : array()
-      );
-      $value = ft_process_form_field($data);
-      $query[] = $row["col_name"] . " = '$value'";
-    }
-    else
-    { */
     if (isset($data[$row["field_name"]]) && !empty($data[$row["field_name"]]) )
       {
         
