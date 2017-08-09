@@ -23,7 +23,7 @@ jQuery(document).ready(function(){
             selector.append(jQuery('<option>', { 
               value: item.id_provincia,
               text : item.descripcion_provincia ,
-              /*selected: (item.id_provincia == selector.attr('data-value')) ? 'selected' : false*/
+              selected: (item.id_provincia == selector.attr('data-value')) ? 'selected' : false
             }));
          });
 
@@ -53,7 +53,7 @@ jQuery(document).ready(function(){
             selector.append(jQuery('<option>', { 
               value: item.id_localidad,
               text : item.descripcion_localidad ,
-              /*selected: (item.id_localidad == selector.attr('data-value') ) ? 'selected' : false*/
+              selected: (item.id_localidad == selector.attr('data-value') ) ? 'selected' : false
             }));
          });
 
@@ -89,7 +89,7 @@ jQuery(document).ready(function(){
           selector.append(jQuery('<option>', { 
             value: item.id_pais,
             text : item.descripcion_pais ,
-            /*selected: (item.id_pais == parseInt(selector.attr('data-value')) ) ? 'selected' : false*/
+            selected: (item.id_pais == parseInt(selector.attr('data-value')) ) ? 'selected' : false
           }));
         });
 
@@ -221,8 +221,8 @@ function loadFileUploader(info){
     var initialPreviewConfig = [];
     var initialPreviewThumbTags = [];
     for (var i = 0; i<info.length;i++) {
-      initialPreview[i]=info[i].url,
-      initialPreviewConfig[i]={caption: info[i].nombre, key: info[i].id,  };
+      initialPreview[i]=info[i].content,
+      initialPreviewConfig[i]={caption: info[i].nombre, key: info[i].id, type: info[i].type };
       initialPreviewThumbTags[i]={'{CUSTOM_TAG_DESCRIPTION}': '<textarea disabled class="input_description">'+info[i].descripcion+'</textarea>'}
     }
         
@@ -255,13 +255,13 @@ function loadFileUploader(info){
         },
         language: 'es',
         //Sacar de la configuracion
-        maxFileSize: 100,
+        maxFileSize: info.maxFileSize,
         initialCaption: "Seleccione un archivo",
 
         // previewId and index is only available for individual file upload via the thumbnail
         uploadExtraData: function (previewId, index) {
                           var obj = {};
-                          obj.description = $('#'+previewId).find('textarea').val();
+                          obj.description = $('#'+previewId).find('textarea.input_description').val();
                           obj.gg_user_id=$('#hidden_user_id').val();
                           return obj;
                       },
