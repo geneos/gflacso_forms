@@ -85,6 +85,7 @@ function gflacso_graduados_update_submission_hook($params)
     if ($return_info['success']) {
       $return_info = gg_loadUserPersonalData($form_id,$submission_id,$infohash);
     }
+
   }
 
   if (gg_isUpdatePersonalData($infohash)){
@@ -284,7 +285,7 @@ function gg_updateCourseStatus($status) {
 
   }else{
     $success = false;
-    $message = "El servicio no esta diponible en $url";
+    $message = "El servicio no esta diponible";
   }
 
   $return_info = array(
@@ -341,7 +342,7 @@ function gg_loadCreateCourseStatus($form_id,$submission_id,$infohash) {
 
   }else{
     $success = false;
-    $message = "El servicio no esta diponible en $url";
+    $message = "El servicio no esta diponible";
   }
 
   $return_info = array(
@@ -410,7 +411,7 @@ function gg_processFileForm($infohash) {
 
   }else{
     $success = false;
-    $message = "El servicio no esta diponible en $url";
+    $message = "El servicio no esta diponible";
   }
 
   $return_info = array(
@@ -447,7 +448,7 @@ function gg_processLoginForm($infohash) {
 
   }else{
     $success = false;
-    $message = "El servicio no esta diponible en $url";
+    $message = "El servicio no esta diponible";
   }
 
   $return_info = array(
@@ -496,7 +497,7 @@ function gg_loadUserPersonalData($form_id,$submission_id,$infohash) {
         $data['fecha_nacimiento'] = date("Y-m-d H:i:s",strtotime($data['fecha_nacimiento']));
         $data['telefono'] = $data["pais_telefono_particular"].'|'.$data["area_telefono_particular"].'|'.$data["numero_telefono_particular"];
         $data['celular'] = $data["pais_telefono_celular"].'|'.$data["area_telefono_celular"].'|'.$data["numero_telefono_celular"];
-         $data['confirmar_email'] = $data['email'];
+        $data['confirmar_email'] = $data['email'];
 
     }
     else {
@@ -506,7 +507,7 @@ function gg_loadUserPersonalData($form_id,$submission_id,$infohash) {
 
   }else{
     $success = false;
-    $message = "El servicio no esta diponible en $url";
+    $message = "El servicio no esta diponible";
   }
 
   $return_info = array(
@@ -529,28 +530,11 @@ function gg_loadUserPersonalData($form_id,$submission_id,$infohash) {
       if ($return &&  $return['transaction'] == SUCCESS) {
           $success = true;
           $message = $return['message'];
-
-          /*foreach ($return['datos_personales'] as $field => $value){
-            $data[$field] = $value;
+          $campos = json_decode($return['campos_opcionales']);
+          foreach($campos as $campo){
+            //var_dump($campo);
+            $data[$campo->name] = $campo->value;
           }
-
-          $ggsettings = ft_get_module_settings("", "arbitrary_settings");
-          //Seteo valores por defecto para Residencia
-          if (!isset($data["pais_residencia"]) || empty($data["pais_residencia"]) 
-              || $data["pais_residencia"] == 269)
-            $data["pais_residencia"] = intval($ggsettings["GGDefaultCountry"]);
-
-          if (!isset($data["provincia"]) || empty($data["provincia"]))
-            $data["provincia"] = intval($ggsettings["GGDefaultProvince"]);
-
-          if (!isset($data["localidad"]) || empty($data["localidad"]))
-            $data["localidad"] = intval($ggsettings["GGDefaultCity"]);
-          //Fix para mulivalor del selector de Residencia (Pais, provincia, ciudad)
-          $data['residencia']=$data["pais_residencia"].','.$data["provincia"].','.$data["localidad"];
-          $data['fecha_nacimiento'] = date("Y-m-d H:i:s",strtotime($data['fecha_nacimiento']));
-          $data['telefono'] = $data["pais_telefono_particular"].'|'.$data["area_telefono_particular"].'|'.$data["numero_telefono_particular"];
-          $data['celular'] = $data["pais_telefono_celular"].'|'.$data["area_telefono_celular"].'|'.$data["numero_telefono_celular"];
-           $data['confirmar_email'] = $data['email'];*/
 
       }
       else {
@@ -560,7 +544,7 @@ function gg_loadUserPersonalData($form_id,$submission_id,$infohash) {
 
     }else{
       $success = false;
-      $message = "El servicio no esta diponible en $url";
+      $message = "El servicio no esta diponible";
     }
 
     //Obtengo info adicional (Campos adicionales)
@@ -648,7 +632,7 @@ function gg_processUpdatePersonalDataForm($infohash) {
 
   }else{
     $success = false;
-    $message = "El servicio no esta diponible en $url";
+    $message = "El servicio no esta diponible";
   }
 
   $return_info = array(
@@ -663,9 +647,14 @@ function gg_processUpdatePersonalDataForm($infohash) {
 function gg_processUpdateAdditionalDataForm($infohash,$formid) {
 
   $aditionalFields = getAdditionalFields($infohash,$formid);
-  
+  foreach ($aditionalFields as $key => $aditionalField) {
+    $camposAdicionales[$key]['type'] = $aditionalField['type_name'];
+    $camposAdicionales[$key]['value'] = $aditionalField['value'];
+    $camposAdicionales[$key]['name'] = $aditionalField['field_name'];
+  }
+ 
   //Itero por los campos adicionales y los formateo para enviar.
-  $camposAdicionales="[{tipo:'texto',valor:'hola',nombre:'campo_ejemplo'},{tipo:archivo,valor:'52',nombre:'imagen'}]";
+  $camposAdicionales=json_encode($camposAdicionales);
 
   $val = array(
     'id_alumno'=> intval($_SESSION['gg_user_id']),
@@ -690,7 +679,7 @@ function gg_processUpdateAdditionalDataForm($infohash,$formid) {
 
   }else{
     $success = false;
-    $message = "El servicio no esta diponible en $url";
+    $message = "El servicio no esta diponible";
   }
 
   $return_info = array(
@@ -743,7 +732,7 @@ function gg_processResetPasswordForm($infohash) {
 
   }else{
     $success = false;
-    $message = "El servicio no esta diponible en $url";
+    $message = "El servicio no esta diponible";
   }
 
   $return_info = array(
@@ -818,7 +807,7 @@ function gg_processResetChangePasswordForm($infohash) {
 
   }else{
     $success = false;
-    $message = "El servicio no esta diponible en $url";
+    $message = "El servicio no esta diponible";
   }
 
 
@@ -870,7 +859,7 @@ function gg_processChangePasswordForm($infohash) {
 
   }else{
     $success = false;
-    $message = "El servicio no esta diponible en $url";
+    $message = "El servicio no esta diponible";
   }
 
   $return_info = array(
@@ -929,7 +918,7 @@ function gg_processNewAccountForm($infohash) {
 
   }else{
     $success = false;
-    $message = "El servicio no esta diponible en $url";
+    $message = "El servicio no esta diponible";
   }
 
   $return_info = array(

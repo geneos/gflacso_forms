@@ -220,10 +220,10 @@ function loadFileUploader(info){
     var initialPreview = [];
     var initialPreviewConfig = [];
     var initialPreviewThumbTags = [];
-    for (var i = 0; i<info.length;i++) {
-      initialPreview[i]=info[i].content,
-      initialPreviewConfig[i]={caption: info[i].nombre, key: info[i].id, type: info[i].type };
-      initialPreviewThumbTags[i]={'{CUSTOM_TAG_DESCRIPTION}': '<textarea disabled class="input_description">'+info[i].descripcion+'</textarea>'}
+    for (var i = 0; i<info.data.length;i++) {
+      initialPreview[i]=info.data[i].content,
+      initialPreviewConfig[i]={caption: info.data[i].nombre, key: info.data[i].id, type: info.data[i].type };
+      initialPreviewThumbTags[i]={'{CUSTOM_TAG_DESCRIPTION}': '<textarea disabled class="input_description">'+info.data[i].descripcion+'</textarea>'}
     }
         
     $("[id^='file_input']").fileinput({

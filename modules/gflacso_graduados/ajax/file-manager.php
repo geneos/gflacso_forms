@@ -127,10 +127,10 @@ else if ($action == 'get-files') {
             $success = true;
             $message = $return['message'];
             foreach ($return['archivos'] as $key => $archivo){
-                $ret[$key]['nombre'] = $archivo['nombre_archivo'];
-                $ret[$key]['descripcion'] = $archivo['descripcion_archivo'];
-                $ret[$key]['id'] = $archivo['id_archivo'];
-                $token = hash_hmac('md5', $ret[$key]['id'], $secret);
+                $ret['data'][$key]['nombre'] = $archivo['nombre_archivo'];
+                $ret['data'][$key]['descripcion'] = $archivo['descripcion_archivo'];
+                $ret['data'][$key]['id'] = $archivo['id_archivo'];
+                $token = hash_hmac('md5', $ret['data'][$key]['id'], $secret);
                 $id_archivo = $archivo['id_archivo'];
 
                 $type = get_type($archivo['nombre_archivo']);
@@ -138,9 +138,9 @@ else if ($action == 'get-files') {
                     $content = file_get_contents($urlfile."get_file.php?id_archivo=$id_archivo&token=$token");
                 else
                     $content =  $urlfile."get_file.php?id_archivo=$id_archivo&token=$token";
-                $ret[$key]['type'] = $type;
+                $ret['data'][$key]['type'] = $type;
 
-                $ret[$key]['content'] = $content;
+                $ret['data'][$key]['content'] = $content;
             }
         }
         else {
@@ -154,7 +154,7 @@ else if ($action == 'get-files') {
     }
 
     $ret['maxFileSize'] = $settings["WSFileMaxSize"];
-    
+
     echo json_encode($ret); 
 }
 
