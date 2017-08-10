@@ -532,7 +532,6 @@ function gg_loadUserPersonalData($form_id,$submission_id,$infohash) {
           $message = $return['message'];
           $campos = json_decode($return['campos_opcionales']);
           foreach($campos as $campo){
-            //var_dump($campo);
             $data[$campo->name] = $campo->value;
           }
 
@@ -667,7 +666,7 @@ function gg_processUpdateAdditionalDataForm($infohash,$formid) {
   if($client->Service_Exists()){
    
     $client->Call->Method("alumno_actualizar_campos_opcionales",$val,$return);
-     
+     var_dump($return);
     if ($return &&  $return['transaction'] == SUCCESS) {
         $success = true;
         $message = $return['message'];
@@ -714,8 +713,6 @@ function gg_processResetPasswordForm($infohash) {
   );
 
   $client = gg_getWebserviceClient();
-
-  var_dump($val);
  
   if($client->Service_Exists()){
    
@@ -740,8 +737,6 @@ function gg_processResetPasswordForm($infohash) {
     "message" => $message
   );
 
-  print_r($return);
-   die();
   return $return_info;
 }
 

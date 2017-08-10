@@ -122,7 +122,7 @@ else if ($action == 'get-files') {
         $client->SetAuth($uid, $pwd);
         $client->Call->Method("get_archivos",$val,$return);
         $ret = [];
-
+        $ret['data'] = [];
         if ($return &&  $return['transaction'] == SUCCESS) {
             $success = true;
             $message = $return['message'];
