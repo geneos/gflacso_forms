@@ -24,4 +24,3 @@ $view_id = 5;
 
 $filename  = "reset-password.php";
 require_once("$g_root_dir/modules/form_builder/form.php");
-die('hola');

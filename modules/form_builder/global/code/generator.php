@@ -24,7 +24,6 @@ function fb_generate_form_page($config, $page = 1, $submission_id = "")
   {
     $placeholders[$info["placeholder_id"]] = $info["placeholder_value"];
   }
-
 	$settings = array(
 	  "mode"                       => "live",
 	  "published_form_id"          => $published_form_id,
@@ -45,8 +44,13 @@ function fb_generate_form_page($config, $page = 1, $submission_id = "")
 	  // special override vars
     "error_code"                 => isset($config["error_code"]) ? $config["error_code"] : "",
 	  "validation_error"           => isset($config["validation_error"]) ? $config["validation_error"] : "",
-    "validation_warning"           => isset($config["validation_warning"]) ? $config["validation_warning"] : ""
-	);
+    "validation_warning"           => isset($config["validation_warning"]) ? $config["validation_warning"] : "",
+	  "error_on_init"           => isset($config["error_on_init"]) ? $config["error_on_init"] : 0,
+    "back_page"           => (isset($config["back_page"]) && $page > 1 ) ? $config["back_page"] : "",
+    "url_salida"           => isset($config["url_salida"]) ? $config["url_salida"] : ""
+
+
+  );
 
 	// add in the templates
 	foreach ($config["templates"] as $template_info)
@@ -192,6 +196,9 @@ function fb_generate_form($settings)
   $smarty->assign("g_root_dir", $g_root_dir);
   $smarty->assign("thankyou_page_content", $settings["thankyou_page_content"]);
   $smarty->assign("form_offline_page_content", $settings["form_offline_page_content"]);
+  $smarty->assign("back_page", $settings["back_page"]);
+  $smarty->assign("url_salida", $settings["url_salida"]);
+
 
   if (isset($settings["submission_id"]) && !empty($settings["submission_id"]))
     $smarty->assign("submission_id", $settings["submission_id"]);
@@ -209,7 +216,10 @@ function fb_generate_form($settings)
   };
   //]]>
   </script>
-  <script src="$g_root_url/themes/default/scripts/jquery-ui-1.8.6.custom.min.js"></script>
+  <!--script src="$g_root_url/themes/default/scripts/jquery-ui-1.8.6.custom.min.js"></script-->
+  <script src="$g_root_url/global/scripts/jquery-ui-1.9.1.js"></script>
+
+  <link rel="stylesheet" href="$g_root_url/themes/default/css/smoothness/jquery-ui-1.8.6.custom.css" type="text/css" media="screen" />
   <script src="$g_root_url/global/scripts/general.js"></script>
   <script src="$g_root_url/global/scripts/rsv.js"></script>
   <script src="$g_root_url/global/scripts/field_types.php"></script>
@@ -287,6 +297,10 @@ END;
   // if there's a warning message, add that too
   if (isset($settings["validation_warning"]) && !empty($settings["validation_warning"]))
     $smarty->assign("validation_warning", $settings["validation_warning"]);
+
+  // if there's a init error message, add that too
+  if (isset($settings["error_on_init"]) && !empty($settings["error_on_init"]))
+    $smarty->assign("error_on_init", $settings["error_on_init"]);
 
 
   // now generate the page content

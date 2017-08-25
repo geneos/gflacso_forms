@@ -27,6 +27,7 @@
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
   padding: 10px 0;
+  margin-top: 20px;
 }
 
 #footer ul {
@@ -103,5 +104,21 @@ input[type="checkbox"] + label {
 
 .krajee-default.file-preview-frame {
   max-width:46%;
+}
+
+.ts_continue_block .btn {
+  float:right;
+}
+
+.ts_continue_block a.btn {
+  float:left;
+}
+
+.bootstrap.form-horizontal legend{
+  text-transform: uppercase;
+}
+
+.conditional_input {
+  margin-top:5px;
 }
 

@@ -117,6 +117,8 @@ if ($isPreinscripted == 1 && $filename  == "inscripcion.php"){
 
 
 $next_page = $page + 1;
+$back_page = $page - 1;
+
 $page_info = $all_pages[$page - 1];
 $page_type = $page_info["page_type"];
 
@@ -136,25 +138,30 @@ if ($page_type == "review" && $filename  = "inscripcion.php"){
 */
 
 $next_page = "$filename?page=$next_page";
+$back_page = "$filename?page=$back_page";
 $nosession = "$filename?page=1";
 
 if (isset($published_form_id)){
   $next_page .= "&published_form_id=$published_form_id";
+  $back_page .= "&published_form_id=$published_form_id";
   $nosession .= "&published_form_id=$published_form_id";
 }
 
 if (isset($course_id)){
   $next_page .= "&course_id=$course_id";
+  $back_page .= "&course_id=$course_id";
   $nosession .= "&course_id=$course_id";
 }
 
 if (isset($id_alumno)){
   $next_page .= "&id_alumno=$id_alumno";
+  $back_page .= "&id_alumno=$id_alumno";
   $nosession .= "&id_alumno=$id_alumno";
 }
 
 if (isset($key)) {
   $next_page .= "&key=$key";
+  $back_page .= "&key=$key";
   $nosession .= "&key=$key";
 }
 
@@ -177,6 +184,7 @@ else
     "submit_button"     => "form_tools_continue",
     //Pass form_published_id and course_id parameters
     "next_page"         => "$next_page",
+    "back_page"         => "$back_page",
     "form_data"         => $_POST,
     "file_data"         => $_FILES,
     "no_sessions_url"   => "$nosession"
@@ -200,9 +208,10 @@ else
 
 	// if there were any validation errors, pass the error along to the page. It'll use it to know not to
 	// redirecting and to show the error message
-	if (!$g_success)
+	if (!$g_success || $error_on_init)
 	{
-	  $config["validation_error"] = $g_message;
+	  $config["validation_error"] = $error_on_init ? $error_on_init_message : $g_message;
+    $config["error_on_init"] = $error_on_init;
 	}
   else if ( isset($_SESSION[$namespace]["validation_warning"])
             && !empty($_SESSION[$namespace]["validation_warning"]) ) {
@@ -211,5 +220,6 @@ else
 }
 
 // now generate and display the form
-
+$config["back_page"] = $back_page;
+$config["url_salida"] = $url_salida;
 fb_generate_form_page($config, $page, $submission_id);

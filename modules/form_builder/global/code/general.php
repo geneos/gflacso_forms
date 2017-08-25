@@ -196,6 +196,13 @@ function fb_get_form_validation_custom_error_handler_js()
 
   $js =<<< END
 
+function fb_validate_nomodal(f, error_info) {
+  if (!error_info.length) {
+    return true;
+  }
+
+  return false;
+}
 function fb_validate(f, error_info) {
   if (!error_info.length) {
     return true;
@@ -215,14 +222,14 @@ function fb_validate(f, error_info) {
     popup_type: "error",
     width:      450,
     content:    error_str,
-    buttons:    [{
+    /*buttons:    [{
       text:  "{$LANG["word_close"]}",
       click: function() {
         $(this).dialog("close");
         $(first_el).focus().select();
       }
-    }]
-  })
+    }],*/
+  });
 
   return false;
 }

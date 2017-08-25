@@ -113,15 +113,32 @@ function ft_generate_submission_js_validation($grouped_fields, $settings = array
     $rules = implode(";\n", $js_lines);
     $custom_error_handler_str = (!empty($custom_error_handler)) ? "rsv.customErrorHandler = $custom_error_handler;" : "";
     $js =<<< END
+  var rules = [];
+  $rules
 $(function() {
-  $("#{$form_element_id}").bind("submit", function() { return rsv.validate(this, rules); });
+
+  $("#{$form_element_id}").bind('submit', function (event) {
+
+      //Valido sin mostrar modals
+      if (!rsv.validateModalOpt(this, rules, false)) {
+        event.preventDefault();
+        rsv.validateModalOpt(this, rules,true);
+      }
+      /*
+      if ( !$("#{$form_element_id}").attr("data-valid")){
+        event.preventDefault();
+        if (rsv.validate(this, rules)) {
+          $("#{$form_element_id}").attr("data-valid","true");
+          $("#{$form_element_id}").submit();
+        }
+      }*/
+  });
+
   $custom_error_handler_str
 });
-var rules = [];
-$rules
+
 END;
   }
-
   return $js;
 }
 

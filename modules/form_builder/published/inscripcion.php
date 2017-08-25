@@ -43,10 +43,16 @@ else {
 
 	if($client->Service_Exists()){
 
-		$client->Call->Method('get_nombre_posgrado',$val,$return);
+		$client->Call->Method('get_data_posgrado',$val,$return);
 		 
 		if ($return &&  $return['transaction'] == SUCCESS) {
 		    $coursename = $return['nombre_posgrado'];
+			$url_salida = $return['url_salida'];
+
+		    if ($return['posgrado_habilitado'] == "FALSE") {
+		    	$error_on_init = true;
+				$error_on_init_message = "Posgrado no habilitado para preinscripciónes";
+		    }
 		}
 
 	} 

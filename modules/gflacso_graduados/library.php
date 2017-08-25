@@ -498,6 +498,8 @@ function gg_loadUserPersonalData($form_id,$submission_id,$infohash) {
         $data['telefono'] = $data["pais_telefono_particular"].'|'.$data["area_telefono_particular"].'|'.$data["numero_telefono_particular"];
         $data['celular'] = $data["pais_telefono_celular"].'|'.$data["area_telefono_celular"].'|'.$data["numero_telefono_celular"];
         $data['confirmar_email'] = $data['email'];
+        $data['necesidades_especiales'] = $data['necesidades_especiales'];
+        $data['tipo_documento'] = $data['tipo_documento'].','.$data['otro_documento'];
 
     }
     else {
@@ -589,7 +591,7 @@ function gg_processUpdatePersonalDataForm($infohash) {
       "success" => false,
       "message" => $message
     );
-    
+    var_dump(  );
 
   $val = array(
     'id_alumno'=> intval($_SESSION['gg_user_id']),
@@ -599,7 +601,7 @@ function gg_processUpdatePersonalDataForm($infohash) {
     'confirmar_email' => $infohash['confirmar_email'],    
     'sexo' => $infohash['sexo'],
     'pais_emisor_documento' => $infohash['pais_emisor_documento_country_only'],
-    'fecha_nacimiento' => $infohash['fecha_nacimiento'],
+    'fecha_nacimiento' => $newDateString = date_format(date_create_from_format('d/m/Y', $infohash['fecha_nacimiento']), 'Y-m-d'),
     'calle_domicilio' => $infohash['calle_domicilio'],
     'numero_domicilio' => intval($infohash['numero_domicilio']),
     'cp_domicilio' => $infohash['cp_domicilio'],
@@ -611,7 +613,8 @@ function gg_processUpdatePersonalDataForm($infohash) {
     'numero_telefono_particular' => $infohash['telefono_3'],
     'pais_celular_alumno' => $infohash['celular_1'],
     'area_celular_alumno' => $infohash['celular_2'],
-    'numero_celular_alumno' => $infohash['celular_3']
+    'numero_celular_alumno' => $infohash['celular_3'],
+    'necesidades_especiales' => $infohash['necesidades_especiales']
   );
 
   $client = gg_getWebserviceClient();
@@ -874,7 +877,12 @@ function gg_processNewAccountForm($infohash) {
   $password = $infohash['password'];
   $confirmar_password =$infohash['confirmar_password'];
   if ($password != $confirmar_password)
-      $message .= "Las contraseñas no coinciden";
+      $message .= "Las contraseñas no coinciden. ";
+
+  $email = $infohash['email'];
+  $confirmar_email =$infohash['confirmar_email'];
+  if ($email != $confirmar_email)
+      $message .= "Las direcciones de mail ingresadas no coinciden";
   
   if (!empty($message))
     return array (
@@ -890,7 +898,8 @@ function gg_processNewAccountForm($infohash) {
     'tipo_documento' => $infohash['tipo_documento'],
     'nro_documento' => $infohash['nro_documento'],
     'password' => $infohash['password'],
-    'id_posgrado' => $_SESSION['gg_course_id']
+    'id_posgrado' => $_SESSION['gg_course_id'],
+    'otro_documento' => $infohash['tipo_documento_conditional_input']
   );
 
   $client = gg_getWebserviceClient();

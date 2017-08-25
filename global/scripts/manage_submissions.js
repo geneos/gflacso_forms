@@ -547,6 +547,7 @@ ms.check_valid_date = function() {
 
 
 ms.submit_form = function(f, error_info) {
+
   if (!error_info.length) {
     return true;
   }

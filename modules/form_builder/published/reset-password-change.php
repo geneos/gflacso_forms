@@ -3,6 +3,8 @@
  * Custom Form Page, creada manualmente
  */
 require_once('../../../global/library.php');
+require_once("../../gflacso_graduados/class/simple_restclient.php");
+
 //Search for POST first
 $published_form_id = $_POST['published_form_id'];
 //If not search for GET
@@ -35,6 +37,37 @@ $form_id = 7;
 //FIXME: Ver como obtenerlo de la base de datos
 //Vista formulario reset-password-change
 $view_id = 8;
+
+
+/* Valido Key antes de empezar */
+$settings = ft_get_module_settings("", "arbitrary_settings");
+
+$uid  = $settings["WSUser"];
+$pwd  = $settings["WSPassword"];
+$url = $settings["WSURL"];
+
+$clase = "FlacsoWs";
+$client =new simple_restclient($url); 
+$client->SetClass($clase);
+$client->SetAuth($uid, $pwd);
+
+
+	$val = array(
+	  'id_alumno'=>intval($id_alumno),
+	  'key'=>$key
+	  );
+
+	if($client->Service_Exists()){
+
+		$client->Call->Method('alumno_validar_key',$val,$return);
+		 
+		if ($return &&  $return['transaction'] == ERROR) {
+		    $message = $return['message'];
+		    $error_on_init = true;
+			$error_on_init_message = $message;
+		}
+
+	} 
 
 $filename  = "reset-password-change.php";
 require_once("$g_root_dir/modules/form_builder/form.php");

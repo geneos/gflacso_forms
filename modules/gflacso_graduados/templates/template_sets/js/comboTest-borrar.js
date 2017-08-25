@@ -1,66 +1,90 @@
 /* COMBO RESIDENCIA */
+
+function change_country(id_pais,value){
+  gflacso_startLoading();
+  
+  selector = jQuery("[id$='_province']");
+  selector.find('option').remove();
+
+  request = $.ajax({
+    url: g.root_url+"/modules/gflacso_graduados/ajax/region.php",
+    type: "post",
+    data: {'action':'get_provincias','id_pais':id_pais}
+  });
+  // Callback handler that will be called on success
+  request.done(function (response, textStatus, jqXHR){
+      items = response.data;
+    jQuery.each(items, function (i, item) {
+        selector.append(jQuery('<option>', { 
+          value: item.id_provincia,
+          text : item.descripcion_provincia ,
+          selected: (item.id_provincia == value) ? 'selected' : false
+        }));
+     });
+
+    if (selector.val() == -1)
+      selector.attr("disabled","disabled");
+    else
+      selector.removeAttr("disabled");
+
+    gflacso_stopLoading();
+
+    jQuery("[id$='_values']").val( jQuery("[id$='_country']").val()+','+jQuery("[id$='_province']").val()+','+jQuery("[id$='_city']").val() );
+
+  });
+}
+
+function change_province(id_provincia,value){
+    gflacso_startLoading();
+    var selector = jQuery("[id$='_city']");
+    selector.find('option').remove();
+    request = $.ajax({
+      url: g.root_url+"/modules/gflacso_graduados/ajax/region.php",
+      type: "post",
+      data: {'action':'get_localidades','id_provincia':id_provincia}
+    });
+    // Callback handler that will be called on success
+    request.done(function (response, textStatus, jqXHR){
+        items = response.data;
+      jQuery.each(items, function (i, item) {
+          selector.append(jQuery('<option>', { 
+            value: item.id_localidad,
+            text : item.descripcion_localidad ,
+            selected: (item.id_localidad == value ) ? 'selected' : false
+          }));
+       });
+
+    if (selector.val() == -1)
+      selector.attr("disabled","disabled");
+    else
+      selector.removeAttr("disabled");
+
+    gflacso_stopLoading();
+
+
+    jQuery("[id$='_values']").val(jQuery("[id$='_country']").val()+','+jQuery("[id$='_province']").val()+','+jQuery("[id$='_city']").val());
+     
+  });
+}
+/* COMBO RESIDENCIA */
 jQuery(document).ready(function(){
+
 
   //Funcion on changue de paises
   jQuery("[id$='_country']").change(function(event){
-      gflacso_startLoading();
-      
-      selector = jQuery("[id$='_province']");
-      selector.find('option').remove();
-      var id_pais = jQuery(this).val() ? jQuery(this).val() : parseInt(jQuery(this).attr("data-value"));
+ 
+      var id_pais = jQuery(this).val();
       //Trigger onchange de paises 
-      jQuery("[id$='_province']").trigger("change");
-
-      request = $.ajax({
-        url: g.root_url+"/modules/gflacso_graduados/ajax/region.php",
-        type: "post",
-        data: {'action':'get_provincias','id_pais':id_pais}
-      });
-      // Callback handler that will be called on success
-      request.done(function (response, textStatus, jqXHR){
-          items = response.data;
-        jQuery.each(items, function (i, item) {
-            selector.append(jQuery('<option>', { 
-              value: item.id_provincia,
-              text : item.descripcion_provincia ,
-              selected: (item.id_provincia == selector.attr('data-value')) ? 'selected' : false
-            }));
-         });
-
-        gflacso_stopLoading();
-
-    });
-
-    jQuery("[id$='_values']").val( jQuery("[id$='_country']").val()+','+jQuery("[id$='_province']").val()+','+jQuery("[id$='_city']").val() );
+      change_country(id_pais,0);
+      change_province(-1,0);
+      //jQuery("[id$='_province']").trigger("change");
 
   });
 
   //Funcion on changue de provincias
   jQuery("[id$='_province']").change(function(event){
-      gflacso_startLoading();
-      var selector = jQuery("[id$='_city']");
-      selector.find('option').remove();
-      var id_provincia = jQuery(this).val() ? jQuery(this).val() : parseInt(jQuery(this).attr("data-value"));
-      request = $.ajax({
-        url: g.root_url+"/modules/gflacso_graduados/ajax/region.php",
-        type: "post",
-        data: {'action':'get_localidades','id_provincia':id_provincia}
-      });
-      // Callback handler that will be called on success
-      request.done(function (response, textStatus, jqXHR){
-          items = response.data;
-        jQuery.each(items, function (i, item) {
-            selector.append(jQuery('<option>', { 
-              value: item.id_localidad,
-              text : item.descripcion_localidad ,
-              selected: (item.id_localidad == selector.attr('data-value') ) ? 'selected' : false
-            }));
-         });
-
-      gflacso_stopLoading();
-      jQuery("[id$='_values']").val(jQuery("[id$='_country']").val()+','+jQuery("[id$='_province']").val()+','+jQuery("[id$='_city']").val());
-       
-    });
+      var id_provincia = jQuery(this).val();
+      change_province(id_provincia,0);
    });
 
   jQuery("[id$='_city']").change(function(event){
@@ -101,8 +125,17 @@ jQuery(document).ready(function(){
     if ( jQuery("[id$='_country']").attr('data-value') != undefined 
           && jQuery("[id$='_country']").attr('data-value') != 0 ){
 
-      //Trigger onchange de paises 
-      jQuery("[id$='_country']").trigger("change");
+      var country_selector =  jQuery("[id$='_country']");
+      var province_selector =  jQuery("[id$='_province']");
+      var city_selector =  jQuery("[id$='_city']");
+
+
+      var id_pais = country_selector.attr("data-value");
+      change_country(id_pais,province_selector.attr("data-value"));
+
+      var id_province = province_selector.attr("data-value"); 
+      change_province(id_province,city_selector.attr("data-value"));
+
 
     }
 
@@ -166,31 +199,54 @@ jQuery(document).ready(function(){
   
 });
 
-
-///Single Combo
+//Single Combo
 jQuery(document).ready(function(){
 
     // Cargo valores iniciales para Paises
-    request = $.ajax({
-        url: g.root_url+"/modules/gflacso_graduados/ajax/region.php",
-        type: "post",
-        data: {'action':'get_paises'}
-    });
+    if (jQuery("[id$='_country_only']").length > 0) {
+      gflacso_startLoading();
+      request = $.ajax({
+          url: g.root_url+"/modules/gflacso_graduados/ajax/region.php",
+          type: "post",
+          data: {'action':'get_paises'}
+      });
 
-    // Callback handler that will be called on success
-    request.done(function (response, textStatus, jqXHR){
-        items = response.data;
-        var selector = jQuery("[id$='_country_only']");
-        jQuery.each(items, function (i, item) {
+      // Callback handler that will be called on success
+      request.done(function (response, textStatus, jqXHR){
+          items = response.data;
+          var selector = jQuery("[id$='_country_only']");
+          jQuery.each(items, function (i, item) {
 
-          selector.append(jQuery('<option>', { 
-            value: item.id_pais,
-            text : item.descripcion_pais ,
-            selected: (item.id_pais == selector.attr('data-value') ) ? 'selected' : false
-          }));
+            selector.append(jQuery('<option>', { 
+              value: item.id_pais,
+              text : item.descripcion_pais ,
+              selected: (item.id_pais ==  parseInt(selector.attr('data-value')) ) ? 'selected' : false
+            }));
+          });
+          gflacso_stopLoading();
+      }); 
+    
+      if (jQuery("[id$='_editvalues_only']").length > 0){
+        var editValues = jQuery("[id$='_editvalues_only']").val();
+      
+        gflacso_startLoading();
+        requestCountry = $.ajax({
+          url: g.root_url+"/modules/gflacso_graduados/ajax/region.php",
+          type: "post",
+          data: {'action':'get_paises'}
         });
-
-    }); 
+        // Callback handler that will be called on success
+        requestCountry.done(function (response, textStatus, jqXHR){
+            items = response.data;
+          jQuery.each(items, function (i, item) {
+                if (item.id_pais == editValues){
+                  jQuery("[id$='_countryeditvalues_only']").html(item.descripcion_pais);
+                }
+           });
+          gflacso_stopLoading();
+        });
+     };
+   }
   
 });
 
@@ -267,3 +323,33 @@ function loadFileUploader(info){
                       },
       });
 }
+
+/* COMBO CONDICIONAL */
+jQuery(document).ready(function(){
+
+  var select_conditional_input = jQuery(".select_conditional_input");
+  var name = select_conditional_input.attr("name");
+  var conditionalValue = select_conditional_input.attr("data-conditional-value");
+  var conditionalInput =  jQuery("[name='"+name+"_conditional_input']");
+
+  //Funcion on changue de paises
+  select_conditional_input.change(function(event){
+    console.log(conditionalValue);
+    var val = select_conditional_input.val();
+     console.log(val);
+      //Show conditional input?
+      if (val == conditionalValue)
+        conditionalInput.show();
+      else
+        conditionalInput.hide();
+  });
+
+  //Show conditional input?
+  console.log(conditionalValue);
+  var val = select_conditional_input.val();
+  if (val == conditionalValue)
+    conditionalInput.show();
+  else
+    conditionalInput.hide();
+
+});

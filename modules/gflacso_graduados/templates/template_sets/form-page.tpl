@@ -2,10 +2,12 @@
     <div class="col-sm-8 col-sm-offset-2">
         <div class="ts_content_inner">
           <div id="content">
-
+                 {{error_message}}
+                 
+                 {{if !$error_on_init}} 
                   <!--h2>{{$page_name}}</h2-->
 
-                  {{error_message}}
+                  
 
                   <!-- Adds links to restore/change password and create user -->
 
@@ -92,7 +94,7 @@
                   </div>
 
                 </form>
-
+                {{/if}}
           </div>
         </div>
     </div>

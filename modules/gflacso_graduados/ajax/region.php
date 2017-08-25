@@ -58,6 +58,10 @@ if( isset($_POST['action']) ) {
                 
                 $jsondata['message'] = 'Provincias obtenidos con exito';
                 $jsondata['success'] = true;
+                if (sizeof($return) == 0 )
+                    array_unshift($return,array("id_provincia" => -1, "descripcion_provincia" => "-- Sin Provincia --")) ;
+                else 
+                    array_unshift($return,array("id_provincia" => 0, "descripcion_provincia" => "-- Seleccionar --")) ;
                 $jsondata['data'] = $return;
 
             }else{
@@ -83,7 +87,10 @@ if( isset($_POST['action']) ) {
                     
                     $jsondata['message'] = 'Localidades obtenidas con exito';
                     $jsondata['success'] = true;
-                    array_unshift($return,array("id_localidad" => 0, "descripcion_localidad" => "-- Seleccionar --")) ;
+                    if (sizeof($return) == 0 )
+                        array_unshift($return,array("id_localidad" => -1, "descripcion_localidad" => "-- Sin Localidad --")) ;
+                    else 
+                            array_unshift($return,array("id_localidad" => 0, "descripcion_localidad" => "-- Seleccionar --")) ;
                     $jsondata['data'] = $return; 
 
                 }else{

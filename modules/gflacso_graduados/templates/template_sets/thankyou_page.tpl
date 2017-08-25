@@ -27,7 +27,12 @@
 
             <!-- Inscripcion -->
             {{if $filename == 'inscripcion.php'}}
-              <div class="row">
+            <div class="row">
+              <div class="col-sm-12">
+              Para continuar con la inscripción por favor diríjase al siguiente link: <a href="{{$url_salida}}">Siguiente</a>
+              </div>
+            </div>
+              <!--div class="row">
               <div class="col-sm-12">
               <a href="javascript:imprSelec()" >Imprimir</a>
               <form id="comprobante" action="{{$page_url}}" method="post" enctype="multipart/form-data">
@@ -68,7 +73,7 @@
 
               </form>
               </div>
-              </div>
+              </div -->
             {{/if}}
           </div>
         </div>
