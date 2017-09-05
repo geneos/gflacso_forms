@@ -578,20 +578,19 @@ function gg_processUpdatePersonalDataForm($infohash) {
       $message .= "Debe ingresar una Localidad </br>";
   }
   else {
-    if ($pais_residencia == null || $pais_residencia == 0 ) {
+    if ($pais_residencia == null || $pais_residencia == 0 ) 
       $message .= "Debe ingresar un Pais </br>";
   }
 
   if ($infohash['email'] != $infohash['confirmar_email'] )
-      $message .= "Los mails no coinciden";
-  }
+      $message = "Los mails no coinciden";
+
 
   if (!empty($message))
     return array (
       "success" => false,
       "message" => $message
     );
-    var_dump(  );
 
   $val = array(
     'id_alumno'=> intval($_SESSION['gg_user_id']),

@@ -43,7 +43,6 @@ if (isset($_POST) && !empty($_POST))
   $request["view_id"] = $view_id;
   $request["editable_field_ids"] = $editable_field_ids;
   list($g_success, $g_message) = ft_update_submission($form_id, $submission_id, $request);
-
   // if there was any problem udpating this submission, make a special note of it: we'll use that info to merge the current POST request
   // info with the original field values to ensure the page contains the latest data (i.e. for cases where they fail server-side validation)
   if (!$g_success)

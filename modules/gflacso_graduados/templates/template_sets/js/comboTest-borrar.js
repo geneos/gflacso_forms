@@ -313,6 +313,8 @@ function loadFileUploader(info){
         //Sacar de la configuracion
         maxFileSize: info.maxFileSize,
         initialCaption: "Seleccione un archivo",
+        removeFromPreviewOnError:true,
+        elErrorContainer:'#fileInputError',
 
         // previewId and index is only available for individual file upload via the thumbnail
         uploadExtraData: function (previewId, index) {
@@ -345,7 +347,6 @@ jQuery(document).ready(function(){
   });
 
   //Show conditional input?
-  console.log(conditionalValue);
   var val = select_conditional_input.val();
   if (val == conditionalValue)
     conditionalInput.show();

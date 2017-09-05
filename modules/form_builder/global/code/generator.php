@@ -47,9 +47,8 @@ function fb_generate_form_page($config, $page = 1, $submission_id = "")
     "validation_warning"           => isset($config["validation_warning"]) ? $config["validation_warning"] : "",
 	  "error_on_init"           => isset($config["error_on_init"]) ? $config["error_on_init"] : 0,
     "back_page"           => (isset($config["back_page"]) && $page > 1 ) ? $config["back_page"] : "",
-    "url_salida"           => isset($config["url_salida"]) ? $config["url_salida"] : ""
-
-
+    "url_salida"           => isset($config["url_salida"]) ? $config["url_salida"] : "",
+    "clear_url"           => isset($config["clear_url"]) ? $config["clear_url"] : ""
   );
 
 	// add in the templates
@@ -198,7 +197,7 @@ function fb_generate_form($settings)
   $smarty->assign("form_offline_page_content", $settings["form_offline_page_content"]);
   $smarty->assign("back_page", $settings["back_page"]);
   $smarty->assign("url_salida", $settings["url_salida"]);
-
+  $smarty->assign("clear_url", $settings["clear_url"]);
 
   if (isset($settings["submission_id"]) && !empty($settings["submission_id"]))
     $smarty->assign("submission_id", $settings["submission_id"]);

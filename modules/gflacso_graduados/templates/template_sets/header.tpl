@@ -77,7 +77,7 @@ jQuery.browser = {};
                 <h2>{{$P.header_texto}}</h2>
               </div>
             {{/if}}
-          </div>
+        </div>
       </div>
       {{/if}}
 
@@ -85,5 +85,11 @@ jQuery.browser = {};
         <div class="col-sm-8 col-sm-offset-2">
           <h1>{{$form_name}} {{$smarty.session.coursename}} </h1>
         </div>
+        {{php}}
+          $this->assign('filename',$GLOBALS["filename"]);
+        {{/php}}
+        {{if $filename == 'inscripcion.php' && $current_page != 1 && $current_page != $num_pages}}
+          <a class="btn btn-default" href="{{$clear_url}}">Salir</a>
+        {{/if}}
       </div>
  

@@ -321,7 +321,6 @@ function ft_get_php_field_validation_rules($field_ids)
 function ft_merge_form_submission($grouped_fields, $request)
 {
 	global $g_multi_val_delimiter;
-
 	$updated_grouped_fields = array();
 	foreach ($grouped_fields as $group_info)
 	{
@@ -336,6 +335,17 @@ function ft_merge_form_submission($grouped_fields, $request)
 				// TODO! This won't work for phone_number fields, other fields
 				$value = (is_array($request[$field_info["field_name"]])) ? implode($g_multi_val_delimiter, $request[$field_info["field_name"]]) : $request[$field_info["field_name"]];
 			  $field_info["submission_value"] = $value;
+        /* Fix for field dates */
+        if ($field_info["field_type_id"] == "8"){
+          $newDateString = date_format(date_create_from_format('d/m/Y', $value), 'Y-m-d');
+          $field_info["submission_value"] = $newDateString . " 00:00:00";
+        }
+
+        /* Fix for conditional input field */
+        if ($field_info["field_type_id"] == "20"){
+          $valueConditionalInput = (is_array($request[$field_info["field_name"]."_conditional_input"])) ? implode($g_multi_val_delimiter, $request[$field_info["field_name"]."_conditional_input"]) : $request[$field_info["field_name"]."_conditional_input"]; 
+          $field_info["submission_value"] = $value.','.$valueConditionalInput;
+        }
 			}
 			$updated_fields[] = $field_info;
 		}
@@ -345,6 +355,7 @@ function ft_merge_form_submission($grouped_fields, $request)
 		  "fields" => $updated_fields
 		);
 	}
+
 
   return $updated_grouped_fields;
 }

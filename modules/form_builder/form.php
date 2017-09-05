@@ -140,29 +140,35 @@ if ($page_type == "review" && $filename  = "inscripcion.php"){
 $next_page = "$filename?page=$next_page";
 $back_page = "$filename?page=$back_page";
 $nosession = "$filename?page=1";
+$clear_url = "$filename?clear";
+
 
 if (isset($published_form_id)){
   $next_page .= "&published_form_id=$published_form_id";
   $back_page .= "&published_form_id=$published_form_id";
   $nosession .= "&published_form_id=$published_form_id";
+  $clear_url .= "&published_form_id=$published_form_id";
 }
 
 if (isset($course_id)){
   $next_page .= "&course_id=$course_id";
   $back_page .= "&course_id=$course_id";
   $nosession .= "&course_id=$course_id";
+  $clear_url .= "&course_id=$course_id";
 }
 
 if (isset($id_alumno)){
   $next_page .= "&id_alumno=$id_alumno";
   $back_page .= "&id_alumno=$id_alumno";
   $nosession .= "&id_alumno=$id_alumno";
+  $clear_url .= "&id_alumno=$id_alumno";
 }
 
 if (isset($key)) {
   $next_page .= "&key=$key";
   $back_page .= "&key=$key";
   $nosession .= "&key=$key";
+  $clear_url .= "&key=$key";
 }
 
 
@@ -222,4 +228,6 @@ else
 // now generate and display the form
 $config["back_page"] = $back_page;
 $config["url_salida"] = $url_salida;
+$config["clear_url"] = $clear_url;
+
 fb_generate_form_page($config, $page, $submission_id);
