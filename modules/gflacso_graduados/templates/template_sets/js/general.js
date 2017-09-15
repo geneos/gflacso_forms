@@ -2,6 +2,7 @@ jQuery(document).ready(function(){
 
     ///Dsiable inputs wrapped in disableds divs
     jQuery('.form-group.readonly').find('input,select').attr("readonly","readonly");
+    jQuery('.form-group.readonly').find('select').attr("disabled","disabled");
 
     //Inject Bootstrap on form elements
     jQuery('form.bootstrap').find('input:not([type="submit"]):not([type="checkbox"]), textarea, select').addClass('form-control');
