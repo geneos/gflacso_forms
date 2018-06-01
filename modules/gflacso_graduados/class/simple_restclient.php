@@ -12,13 +12,23 @@ class simple_restclient {
 		$this->Call = $this;
 	}
 	public function Service_Exists(){
+		global $g_root_dir;
+		//Log before call
+		$timeStart = time();
+		file_put_contents($g_root_dir.'/log.log', "[".$timeStart."]Start Service Exists? ".PHP_EOL, FILE_APPEND);
+
 		if(isset($this->Service_Url) && isset($this->class_name)){
 			$stream = @fopen("{$this->Service_Url}/?class={$this->class_name}","r");
 			if($stream){
 				$buffer = trim(fgets($stream));
 				fclose($stream);
-				if($buffer==1)
+				if($buffer==1){
+					//Log on return
+					$timeEnd = time();
+					file_put_contents($g_root_dir.'/log.log', "[".$timeEnd."]End Start Service Exists?. Calculated Elapsed time: ".($timeEnd - $timeStart).PHP_EOL, FILE_APPEND);
+
 					return TRUE;
+				}
 			}
 		}
 		return FALSE;
@@ -33,14 +43,21 @@ class simple_restclient {
 		return $this;
 	}
 	public function Method($FuncName,$Variable=NULL,&$ByRef=NULL){
+		global $g_root_dir;
 		$uid_auth = ""; if(isset($this->uid_auth)) $uid_auth = $this->uid_auth;
 		$pwd_auth = ""; if(isset($this->pwd_auth)) $pwd_auth = $this->pwd_auth;
 		$FuncCall["BAS_REST_AUTH"] = "{$uid_auth}::{$pwd_auth}";
 		$FuncCall["BAS_REST_CLASS"]	= (isset($this->class_name)) ? $this->class_name : "";
 		$FuncCall["BAS_REST_FUNC"] 	= $FuncName;
 		$FuncCall["BAS_REST_VARS"] 	= json_encode($Variable);
+		//Log before call
+		$timeStart = time();
+		file_put_contents($g_root_dir.'/log.log', "[".$timeStart."]Start Method: ".$FuncName.PHP_EOL, FILE_APPEND);
 		$Return	= $this->GetCurl("{$this->Service_Url}",$FuncCall);
 		$ByRef	= json_decode($Return["content"],FALSE);
+		//Log on return
+		$timeEnd = time();
+		file_put_contents($g_root_dir.'/log.log', "[".$timeEnd."]End Method. Calculated Elapsed time: ".($timeEnd - $timeStart). " CURL Elapsed Time: ".$Return['total_time'].PHP_EOL, FILE_APPEND);
 		if(isset($ByRef->Result)){
 			$ByRef	= json_decode($ByRef->Result,$this->return_as_array);
 			$ByRef	= $ByRef[0];

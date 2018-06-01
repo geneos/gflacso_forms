@@ -231,6 +231,8 @@ function gg_isChangePasswordForm($infohash) {
 
 //Crea instancia el cliente necesario para comunicarse con los webservices
 function gg_getWebserviceClient($isFile = false) {
+  $timeStart = time();
+  file_put_contents($g_root_dir.'/log.log', "[".$timeStart."] Getting Settings".PHP_EOL, FILE_APPEND);
 
   $settings = ft_get_module_settings("", "arbitrary_settings");
 
@@ -245,6 +247,9 @@ function gg_getWebserviceClient($isFile = false) {
   $client =new simple_restclient($url); 
   $client->SetClass($clase);
   $client->SetAuth($uid, $pwd);
+
+  $timeEnd = time();
+  file_put_contents($g_root_dir.'/log.log', "[".$timeEnd."] End Getting Settings".PHP_EOL, FILE_APPEND);
   return $client;
 }
 
@@ -940,6 +945,12 @@ function gg_processNewAccountForm($infohash) {
 */
 function gg_updateCurrentSubmission($form_id,$submission_id,$data) {
   global $g_table_prefix;
+  global $g_root_dir;
+
+  //LOG Start en updateCurrentSubmission
+  $timeStart = time();
+  file_put_contents($g_root_dir.'/log.log', "[".$timeStart."] UpdateCurrentSubmission".PHP_EOL, FILE_APPEND);
+
   $form_fields = ft_get_form_fields($form_id);
   foreach ($form_fields as $row) {
     $field_id = $row["field_id"];
@@ -969,7 +980,11 @@ function gg_updateCurrentSubmission($form_id,$submission_id,$data) {
     WHERE  submission_id = $submission_id
            ";
 
-  return mysql_query($query);
+  $return =  mysql_query($query);
+   //LOG End en updateCurrentSubmission
+  $timeEnd = time();
+    file_put_contents($g_root_dir.'/log.log', "[".$timeEnd."]End updateCurrentSubmission. Calculated Elapsed time: ".($timeEnd - $timeStart).PHP_EOL, FILE_APPEND);
+  return $return;
 }
 
 function gflacso_graduados_process_form_start_hook($params){
