@@ -6,6 +6,10 @@
 * @version    1.0
 */
 class simple_restclient {
+
+
+	private static $logEnabled = true;
+
 	public function simple_restclient($url, $return_as_array=TRUE){
 		$this->Service_Url = rtrim($url,"/");
 		$this->return_as_array = $return_as_array;
@@ -13,9 +17,12 @@ class simple_restclient {
 	}
 	public function Service_Exists(){
 		global $g_root_dir;
-		//Log before call
-		$timeStart = time();
-		file_put_contents($g_root_dir.'/log.log', "[".$timeStart."]Start Service Exists? ".PHP_EOL, FILE_APPEND);
+
+		if(self::$logEnabled) {
+			//Log before call
+			$timeStart = time();
+			file_put_contents($g_root_dir.'/rest_logs/log.log', "[".$timeStart."]Start Service Exists? ".PHP_EOL, FILE_APPEND);
+		}
 
 		if(isset($this->Service_Url) && isset($this->class_name)){
 			$stream = @fopen("{$this->Service_Url}/?class={$this->class_name}","r");
@@ -23,9 +30,11 @@ class simple_restclient {
 				$buffer = trim(fgets($stream));
 				fclose($stream);
 				if($buffer==1){
-					//Log on return
-					$timeEnd = time();
-					file_put_contents($g_root_dir.'/log.log', "[".$timeEnd."]End Start Service Exists?. Calculated Elapsed time: ".($timeEnd - $timeStart).PHP_EOL, FILE_APPEND);
+					if(self::$logEnabled) {
+						//Log on return
+						$timeEnd = time();
+						file_put_contents($g_root_dir.'/rest_logs/log.log', "[".$timeEnd."]End Start Service Exists?. Calculated Elapsed time: ".($timeEnd - $timeStart).PHP_EOL, FILE_APPEND);
+					}
 
 					return TRUE;
 				}
@@ -50,14 +59,19 @@ class simple_restclient {
 		$FuncCall["BAS_REST_CLASS"]	= (isset($this->class_name)) ? $this->class_name : "";
 		$FuncCall["BAS_REST_FUNC"] 	= $FuncName;
 		$FuncCall["BAS_REST_VARS"] 	= json_encode($Variable);
-		//Log before call
-		$timeStart = time();
-		file_put_contents($g_root_dir.'/log.log', "[".$timeStart."]Start Method: ".$FuncName.PHP_EOL, FILE_APPEND);
+		if(self::$logEnabled) {
+			//Log before call
+			$timeStart = time();
+			file_put_contents($g_root_dir.'/rest_logs/log.log', "[".$timeStart."]Start Method: ".$FuncName.PHP_EOL, FILE_APPEND);
+		}
 		$Return	= $this->GetCurl("{$this->Service_Url}",$FuncCall);
 		$ByRef	= json_decode($Return["content"],FALSE);
-		//Log on return
-		$timeEnd = time();
-		file_put_contents($g_root_dir.'/log.log', "[".$timeEnd."]End Method. Calculated Elapsed time: ".($timeEnd - $timeStart). " CURL Elapsed Time: ".$Return['total_time'].PHP_EOL, FILE_APPEND);
+
+		if(self::$logEnabled) {
+			//Log on return
+			$timeEnd = time();
+			file_put_contents($g_root_dir.'/rest_logs/log.log', "[".$timeEnd."]End Method. Calculated Elapsed time: ".($timeEnd - $timeStart). " CURL Elapsed Time: ".$Return['total_time'].PHP_EOL, FILE_APPEND);
+		}
 		if(isset($ByRef->Result)){
 			$ByRef	= json_decode($ByRef->Result,$this->return_as_array);
 			$ByRef	= $ByRef[0];
