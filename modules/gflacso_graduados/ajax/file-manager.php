@@ -10,7 +10,7 @@ $url = $settings["WSFileURL"];
 $urlfile = chop($settings["WSFileURL"],'server.php');
 $secret = $settings["WSFileSecret"];
 $id_usuario = intval($_POST['gg_user_id']);
-
+$descriptionMandatory = $settings["WSFileDescriptionMandatory"];
 
 $clase = "FlacsoWs";
 $client =new simple_restclient($url); 
@@ -28,56 +28,64 @@ if ($action == 'upload') {
     $file_name = $file['name'];
     $file_content = base64_encode(fread(fopen($file_path, "r"), filesize($file_path)));
 
-    $val = array(
-        'id_alumno' => $id_usuario,
-        'file_name' => $file_name,
-        'file_description' => $_POST["description"],
-        'file_content' => $file_content,
-    );
+    $description = $_POST["description"];
+    if ( $description == null || empty($description) )
+         $salida =
+            ['error' => $descriptionMandatory];
+    else {
 
-    $client =new simple_restclient($url); 
-    $client->SetClass($clase);
-    $client->SetAuth($uid, $pwd);
-    if($client->Service_Exists()){
 
-        $client->Call->Method("file_upload",$val,$return);
-        $salida = $return;
-        if ($return &&  $return['transaction'] == SUCCESS) {
-            $success = true;
-            $message = $return['message'];
-            $id_archivo = $return["id_archivo"];
-            $token = hash_hmac('md5', $id_archivo, $secret);
-            $type = get_type($file_name);
-            if ($type == 'text')
-                $content = file_get_contents($urlfile."get_file.php?id_archivo=$id_archivo&token=$token");
-            else
-                $content =  $urlfile."get_file.php?id_archivo=$id_archivo&token=$token";
-            $salida =
-            ['error' => '',
-             'initialPreview' =>[
-                $content,],
-             'initialPreviewConfig' => [
-                    [
-                    'caption'=> $file_name, 
-                    'key'=> $message["id_archivo"],
-                    'width'=> 50,
-                    'type' => get_type($file_name),
-                ],
-            ],
-            'initialPreviewThumbTags' => [
-                    ['{CUSTOM_TAG_DESCRIPTION}'=> '<textarea disabled="disabled"class="input_description">'.$_POST["description"].'</textarea>'],
+        $val = array(
+            'id_alumno' => $id_usuario,
+            'file_name' => $file_name,
+            'file_description' => $_POST["description"],
+            'file_content' => $file_content,
+        );
+
+        $client =new simple_restclient($url); 
+        $client->SetClass($clase);
+        $client->SetAuth($uid, $pwd);
+        if($client->Service_Exists()){
+
+            $client->Call->Method("file_upload",$val,$return);
+            $salida = $return;
+            if ($return &&  $return['transaction'] == SUCCESS) {
+                $success = true;
+                $message = $return['message'];
+                $id_archivo = $return["id_archivo"];
+                $token = hash_hmac('md5', $id_archivo, $secret);
+                $type = get_type($file_name);
+                if ($type == 'text')
+                    $content = file_get_contents($urlfile."get_file.php?id_archivo=$id_archivo&token=$token");
+                else
+                    $content =  $urlfile."get_file.php?id_archivo=$id_archivo&token=$token";
+                $salida =
+                ['error' => '',
+                 'initialPreview' =>[
+                    $content,],
+                 'initialPreviewConfig' => [
+                        [
+                        'caption'=> $file_name, 
+                        'key'=> $message["id_archivo"],
+                        'width'=> 50,
+                        'type' => get_type($file_name),
                     ],
-            ];
+                ],
+                'initialPreviewThumbTags' => [
+                        ['{CUSTOM_TAG_DESCRIPTION}'=> '<textarea disabled="disabled"class="input_description">'.$_POST["description"].'</textarea>'],
+                        ],
+                ];
 
-        }
-        else {
+            }
+            else {
+                $salida =
+                ['error' => $return['message'],];
+            }
+
+        }else{
             $salida =
-            ['error' => $return['message'],];
+                ['error' => "El servicio no esta diponible en $url",];
         }
-
-    }else{
-        $salida =
-            ['error' => "El servicio no esta diponible en $url",];
     }
 
     echo json_encode($salida); 
